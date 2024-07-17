@@ -11,6 +11,7 @@ function App() {
   const [input, setInput] = useState('');
   const [generatingAnswer, setGeneratingAnswer] = useState(false);
   const chatEndRef = useRef(null);
+  const inputRef = useRef(null);
 
   const handleSend = async () => {
     if (input.trim() === '') return;
@@ -42,7 +43,7 @@ function App() {
 
       let responseText = response.data.candidates[0].content.parts[0].text;
       console.log(responseText);
-      responseText = responseText.replace(/^LLM: /, '').replace(/^Assistant: /, '');
+
 
       const llmMessage = {
         text: responseText,
@@ -69,9 +70,20 @@ function App() {
     scrollToBottom();
   }, [messages]);
 
+  useEffect(() => {
+    const handleFocus = () => {
+      inputRef.current.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    inputRef.current.addEventListener('focus', handleFocus);
+    return () => {
+      inputRef.current.removeEventListener('focus', handleFocus);
+    };
+  }, []);
+
   return (
-    <div className="bg-gray-900 h-screen flex flex-col items-center relative font-sans">
-      <header className="w-full flex items-center justify-between p-4">
+    <div className="bg-gray-900 h-dvh p-4 flex flex-col items-center relative font-sans">
+      <header className="w-full flex items-center justify-between mb-4">
         <div className="flex items-center text-white">
           <img src="/logo.png" alt="Logo" className="h-6 mr-2" />
           <span className="text-2xl font-bold">Dime</span>
@@ -91,7 +103,7 @@ function App() {
           </a>
         </div>
       </header>
-      <div className="w-full md:w-2/3 lg:w-3/5 xl:w-3/5 flex-1 overflow-auto mb-4 p-4 rounded chat-container">
+      <div className="w-full md:w-2/3 lg:w-3/5 xl:w-3/5 flex-1 overflow-auto mb-4 p-4 rounded">
         {messages.length === 0 && (
           <div className="text-left text-white mt-16">
             <p className="text-4xl mb-4 font-bold mb-0 pb-0">You are anonymous here</p>
@@ -103,7 +115,7 @@ function App() {
         ))}
         <div ref={chatEndRef} />
       </div>
-      <div className="w-full md:w-2/3 lg:w-3/5 xl:w-3/5 flex p-4 fixed bottom-0">
+      <div className="w-full md:w-2/3 lg:w-3/5 xl:w-3/5 flex" ref={inputRef}>
         <input
           type="text"
           value={input}
