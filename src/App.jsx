@@ -24,7 +24,9 @@ function App() {
     setMessages(newMessages);
     setInput('');
 
-    const conversationHistory = newMessages.map(msg => (msg.isPerson1 ? 'User: ' : 'Answer: ') + msg.text).join('\n');
+    let conversationHistory = newMessages.map(msg => (msg.isPerson1 ? 'User: ' : 'Answer: ') + msg.text).join('\n');
+    conversationHistory += "\nDon't add any prefixes like agent:, assistant:, etc. to your response. Just give the response, that's it.";
+
 
     setGeneratingAnswer(true);
     try {
@@ -38,11 +40,7 @@ function App() {
         },
       });
 
-      console.log(response);
-
       let responseText = response.data.candidates[0].content.parts[0].text;
-      console.log(responseText);
-      responseText = responseText.replace(/^LLM: /, '').replace(/^Assistant: /, '');
 
       const llmMessage = {
         text: responseText,
