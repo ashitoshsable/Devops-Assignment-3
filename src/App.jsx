@@ -82,7 +82,7 @@ function App() {
   }, []);
 
   return (
-    <div className="bg-gray-900 h-dvh p-4 flex flex-col items-center relative font-sans">
+    <div className="bg-gray-900 h-screen p-4 flex flex-col items-center relative font-sans">
       <header className="w-full flex items-center justify-between mb-4">
         <div className="flex items-center text-white">
           <img src="/logo.png" alt="Logo" className="h-6 mr-2" />
