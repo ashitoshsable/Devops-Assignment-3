@@ -11,6 +11,7 @@ function App() {
   const [input, setInput] = useState('');
   const [generatingAnswer, setGeneratingAnswer] = useState(false);
   const chatEndRef = useRef(null);
+  const inputRef = useRef(null);
 
   const handleSend = async () => {
     if (input.trim() === '') return;
@@ -24,9 +25,7 @@ function App() {
     setMessages(newMessages);
     setInput('');
 
-    let conversationHistory = newMessages.map(msg => (msg.isPerson1 ? 'User: ' : 'Answer: ') + msg.text).join('\n');
-    conversationHistory += "\nDon't add any prefixes like agent:, assistant:, etc. to your response. Just give the response, that's it.";
-
+    const conversationHistory = newMessages.map(msg => (msg.isPerson1 ? 'User: ' : 'Answer: ') + msg.text).join('\n');
 
     setGeneratingAnswer(true);
     try {
@@ -36,11 +35,14 @@ function App() {
         }`,
         method: 'post',
         data: {
-          contents: [{ parts: [{ text: conversationHistory }] }],
+          contents: [{ parts: [{ text: conversationHistory + " Don't add any prefixes like agent: , assistant: , etc to your response just give response that's it" }] }],
         },
       });
 
+      console.log(response);
+
       let responseText = response.data.candidates[0].content.parts[0].text;
+      console.log(responseText);
 
       const llmMessage = {
         text: responseText,
@@ -67,11 +69,22 @@ function App() {
     scrollToBottom();
   }, [messages]);
 
+  useEffect(() => {
+    const handleFocus = () => {
+      inputRef.current.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    inputRef.current.addEventListener('focus', handleFocus);
+    return () => {
+      inputRef.current.removeEventListener('focus', handleFocus);
+    };
+  }, []);
+
   return (
     <div className="bg-gray-900 h-screen p-4 flex flex-col items-center relative font-sans">
       <header className="w-full flex items-center justify-between mb-4">
         <div className="flex items-center text-white">
-          <img src="/logo.png" alt="Logo" className="h-6  mr-2" />
+          <img src="/logo.png" alt="Logo" className="h-6 mr-2" />
           <span className="text-2xl font-bold">Dime</span>
         </div>
         <div className="connect-section">
@@ -90,18 +103,18 @@ function App() {
         </div>
       </header>
       <div className="w-full md:w-2/3 lg:w-3/5 xl:w-3/5 flex-1 overflow-auto mb-4 p-4 rounded">
-      {messages.length === 0 && (
-        <div className="text-left text-white mt-16">
-          <p className="text-4xl mb-4 font-bold mb-0 pb-0">You are anonymous here</p>
-          <p className="text-xl font-bold text-blue-500">Nothing gets saved here</p>
-        </div>
-      )}
+        {messages.length === 0 && (
+          <div className="text-left text-white mt-16">
+            <p className="text-4xl mb-4 font-bold mb-0 pb-0">You are anonymous here</p>
+            <p className="text-xl font-bold text-blue-500">Nothing gets saved here</p>
+          </div>
+        )}
         {messages.map((message, index) => (
           <Message key={index} text={message.text} isPerson1={message.isPerson1} />
         ))}
         <div ref={chatEndRef} />
       </div>
-      <div className="w-full md:w-2/3 lg:w-3/5 xl:w-3/5 flex">
+      <div className="w-full md:w-2/3 lg:w-3/5 xl:w-3/5 flex" ref={inputRef}>
         <input
           type="text"
           value={input}
@@ -117,7 +130,7 @@ function App() {
           }`}
           disabled={generatingAnswer}
         >
-          Sent
+          Send
         </button>
       </div>
     </div>
