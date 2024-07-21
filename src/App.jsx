@@ -11,7 +11,6 @@ function App() {
   const [input, setInput] = useState('');
   const [generatingAnswer, setGeneratingAnswer] = useState(false);
   const chatEndRef = useRef(null);
-  const inputRef = useRef(null);
 
   const handleSend = async () => {
     if (input.trim() === '') return;
@@ -39,11 +38,7 @@ function App() {
         },
       });
 
-      console.log(response);
-
       let responseText = response.data.candidates[0].content.parts[0].text;
-      console.log(responseText);
-
 
       const llmMessage = {
         text: responseText,
@@ -70,20 +65,9 @@ function App() {
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    const handleFocus = () => {
-      inputRef.current.scrollIntoView({ behavior: 'smooth' });
-    };
-
-    inputRef.current.addEventListener('focus', handleFocus);
-    return () => {
-      inputRef.current.removeEventListener('focus', handleFocus);
-    };
-  }, []);
-
   return (
-    <div className="bg-gray-900 h-screen p-4 flex flex-col items-center relative font-sans">
-      <header className="w-full flex items-center justify-between mb-4">
+    <div className="bg-gray-900 h-screen flex flex-col items-center font-sans">
+      <header className="header w-full flex items-center justify-between p-4 bg-gray-900">
         <div className="flex items-center text-white">
           <img src="/logo.png" alt="Logo" className="h-6 mr-2" />
           <span className="text-2xl font-bold">Dime</span>
@@ -103,10 +87,10 @@ function App() {
           </a>
         </div>
       </header>
-      <div className="w-full md:w-2/3 lg:w-3/5 xl:w-3/5 flex-1 overflow-auto mb-4 p-4 rounded">
+      <div className="content flex-1 overflow-auto w-full md:w-2/3 lg:w-3/5 xl:w-3/5 p-4">
         {messages.length === 0 && (
           <div className="text-left text-white mt-16">
-            <p className="text-4xl mb-4 font-bold mb-0 pb-0">You are anonymous here</p>
+            <p className="text-4xl mb-4 font-bold">You are anonymous here</p>
             <p className="text-xl font-bold text-blue-500">Nothing gets saved here</p>
           </div>
         )}
@@ -115,25 +99,27 @@ function App() {
         ))}
         <div ref={chatEndRef} />
       </div>
-      <div className="w-full md:w-2/3 lg:w-3/5 xl:w-3/5 flex" ref={inputRef}>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          className="flex-grow m-1 rounded-lg text-slate-100 bg-slate-700 border-0 p-3 transition-all duration-300 focus:outline-none"
-          placeholder="Ask me anything about money..."
-          disabled={generatingAnswer}
-        />
-        <button
-          onClick={handleSend}
-          className={`bg-blue-600 m-1 text-white p-3 rounded-md hover:bg-blue-700 transition-all duration-300 ${
-            generatingAnswer ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-          disabled={generatingAnswer}
-        >
-          Send
-        </button>
-      </div>
+      <footer className="footer w-full flex items-center justify-center p-4 bg-gray-900">
+        <div className="input-container w-full md:w-2/3 lg:w-3/5 xl:w-3/5 flex">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            className="input-field flex-grow m-1 rounded-lg text-slate-100 bg-slate-700 border-0 p-3 transition-all duration-300 focus:outline-none"
+            placeholder="Ask me anything about money..."
+            disabled={generatingAnswer}
+          />
+          <button
+            onClick={handleSend}
+            className={`send-button bg-blue-600 m-1 text-white p-3 rounded-md hover:bg-blue-700 transition-all duration-300 ${
+              generatingAnswer ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            disabled={generatingAnswer}
+          >
+            Send
+          </button>
+        </div>
+      </footer>
     </div>
   );
 }
