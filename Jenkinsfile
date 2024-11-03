@@ -1,31 +1,26 @@
 pipeline {
     agent any
     tools {
-        nodejs 'NodeJS' // Name of your NodeJS installation in Jenkins
+        nodejs 'NodeJS' // Replace 'NodeJS' with the name you set in Global Tool Configuration
     }
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the code from GitHub
-                git url: 'https://github.com/your-repo/your-project.git',
-                branch: 'main'
+                git url: 'https://github.com/ashitoshsable/Devops-Assignment-3.git', branch: 'main'
             }
         }
         stage('Install Dependencies') {
             steps {
-                // Install Node.js dependencies
                 sh 'npm install'
             }
         }
         stage('Build') {
             steps {
-                // Build the React application
                 sh 'npm run build'
             }
         }
         stage('Run Tests') {
             steps {
-                // Run React tests, typically using Jest or any test framework you've set up
                 sh 'npm test -- --watchAll=false'
             }
         }
@@ -38,7 +33,6 @@ pipeline {
             echo 'Build or tests failed!'
         }
         always {
-            // Clean up or send notifications
             echo 'Cleaning up...'
         }
     }
