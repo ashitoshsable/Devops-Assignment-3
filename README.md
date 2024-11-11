@@ -3,5 +3,3 @@
 
 AI to manage your finances.
 
-Njoy!
-
